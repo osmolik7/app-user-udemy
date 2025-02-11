@@ -1,0 +1,15 @@
+
+<div class="container my-4">
+    <h3>{{title}}</h3>
+    <button class="btn {{open ?'btn-warning' : 'btn-primary'}} " (click)="setOpen()"> {{open ? 'Close Form' : 'Open Form'}}</button>
+    <div class="row">
+        <div class="col">
+            <user [users]="users" (userIdEventEmitter)="deleteUser($event)" (userEventEmitter)="editUser($event)"/>
+        </div>
+    </div>
+</div>
+@if(open){
+    <div class="abrir-modal animacion fadeIn">
+        <user-form (userEventEmmiter)="addUser($event)" [user]="user" (openEventEmitter)="setOpen()"/> 
+    </div>
+}
