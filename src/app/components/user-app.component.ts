@@ -1,68 +1,67 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../models/user';
 import { UserService } from '../services/user.service';
-import { UserComponent } from "./user/user.component";
-import { UserFormComponent } from './user-form/user-form.component';
 import Swal from 'sweetalert2';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar.component';
+import { SharingDataService } from '../services/sharing-data.service';
 
 @Component({
   selector: 'user-app',
   standalone: true,
-  imports: [UserComponent, UserFormComponent],
+  imports: [RouterOutlet, RouterModule, NavbarComponent],
   templateUrl: './user-app.component.html',
   styleUrls: ['./user-app.component.css']
 })
-export class UserAppComponent implements OnInit {
-  title: string = 'Users list';
+export class UserAppComponent implements OnInit 
+{
+  
   users: User[] = [];
-  user!: User;
-  open: boolean = false;
 
-  constructor(private service: UserService){
-    this.user = new User();
+  constructor(private service: UserService, private sharingData: SharingDataService, private router:Router){
   }
 
   ngOnInit(): void {
     this.service.findAll().subscribe(users => this.users = users);
+    this.addUser();
+    this.deleteUser();
   }
 
-  addUser(user:User):void {
-    if(user.id){
-      this.users = this.users.map(usuario => (usuario.id == user.id) ? {... user} : usuario);
-      Swal.fire({
-        title: "Exito!",
-        text: "Se a actualizado el usuario correctamente!",
-        icon: "success"
-      });
-    }
-    else{
-      this.users = [... this.users, {... user, id:this.users.length+1}];
-      Swal.fire({
-        title: "Exito!",
-        text: "Se a agregado el usuario correctamente!",
-        icon: "success"
-      });
-    }
-    this.user = new User();
-    this.setOpen();
-  }
-
-  deleteUser(id: number){
-    this.users = this.users.filter(user => user.id != id);
-    Swal.fire({
-      title: "Exito!",
-      text: "Se a eliminado el usuario correctamente!",
-      icon: "success"
+  addUser() {
+    this.sharingData.newUserEventEmmiter.subscribe(user => {
+      if(user.id){
+            this.users = this.users.map(usuario => (usuario.id == user.id) ? {... user} : usuario);
+            Swal.fire({
+              title: "Exito!",
+              text: "Se a actualizado el usuario correctamente!",
+              icon: "success"
+            });
+          }
+          else{
+            this.users = [... this.users, {... user, id:this.users.length+1}];
+            Swal.fire({
+              title: "Exito!",
+              text: "Se a agregado el usuario correctamente!",
+              icon: "success"
+            });
+          }
+          this.router.navigate(['/users'], {state: {users: this.users}});
     });
   }
 
-  editUser(userRow: User){
-    this.user = {... userRow};
-    this.open = true;
-  }
+  deleteUser(){
+      this.sharingData.idUserEventEmitter.subscribe(id => {
+        this.users = this.users.filter(user => user.id != id);
+        this.router.navigate(['/users/create'], {skipLocationChange:true}).then(() => {
+          this.router.navigate(['/users'], {state: {users:this.users}});
+        });
 
-  setOpen(){
-    this.open = !this.open;
+        Swal.fire({
+          title: "Exito!",
+          text: "Se a eliminado el usuario correctamente!",
+          icon: "success"
+        });
+      });
   }
 
 }
