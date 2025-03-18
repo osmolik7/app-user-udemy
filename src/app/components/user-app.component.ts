@@ -38,37 +38,46 @@ export class UserAppComponent implements OnInit
   addUser() {
     this.sharingData.newUserEventEmmiter.subscribe(user => {
       if(user.id){
-            this.users = this.users.map(usuario => (usuario.id == user.id) ? {... user} : usuario);
-            Swal.fire({
-              title: "Exito!",
-              text: "Se a actualizado el usuario correctamente!",
-              icon: "success"
-            });
-          }
-          else{
-            this.users = [... this.users, {... user, id:this.users.length+1}];
-            Swal.fire({
-              title: "Exito!",
-              text: "Se a agregado el usuario correctamente!",
-              icon: "success"
-            });
-          }
-          this.router.navigate(['/users'], {state: {users: this.users}});
+        this.service.update(user).subscribe(userUpdated => {
+          this.users = this.users.map(usuario => (usuario.id == user.id) ? {... userUpdated} : usuario);
+          this.router.navigate(['/users'], {state:{users: this.users}});
+        })
+        Swal.fire({
+          title: "Exito!",
+          text: "Se a actualizado el usuario correctamente!",
+          icon: "success"
+        });
+      }
+      else{
+        this.service.create(user).subscribe(userNew => {
+          this.users = [... this.users, { ... userNew } ];
+          this.router.navigate(['/users'], {state:{users: this.users}});
+          
+        })
+        Swal.fire({
+          title: "Exito!",
+          text: "Se a agregado el usuario correctamente!",
+          icon: "success"
+        });
+      }
     });
   }
 
   deleteUser(){
       this.sharingData.idUserEventEmitter.subscribe(id => {
-        this.users = this.users.filter(user => user.id != id);
-        this.router.navigate(['/users/create'], {skipLocationChange:true}).then(() => {
-          this.router.navigate(['/users'], {state: {users:this.users}});
+        this.service.delete(id).subscribe(() => {
+            this.users = this.users.filter(user => user.id != id);
+            this.router.navigate(['/users/create'], {skipLocationChange:true}).then(() => {
+            this.router.navigate(['/users'], {state:{users: this.users}});
+          });
         });
-
+        
         Swal.fire({
           title: "Exito!",
           text: "Se a eliminado el usuario correctamente!",
           icon: "success"
         });
+
       });
   }
 

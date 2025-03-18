@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
@@ -11,17 +11,21 @@ import { SharingDataService } from '../../services/sharing-data.service';
   imports: [RouterModule],
   templateUrl: './user.component.html'
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
   users: User[] = [];
   title: string = 'Users list';
   
   
-  constructor(private service:UserService, private router: Router, private sharingData:SharingDataService){
+  constructor(private service:UserService, private router: Router, private sharingData:SharingDataService){ 
     if(this.router.getCurrentNavigation()?.extras.state){
       this.users = this.router.getCurrentNavigation()?.extras.state!['users'];
     }
-    else{
-      this.service.findAll().subscribe(users => this.users = users)
+  }
+
+  ngOnInit(): void {
+    if(this.users == undefined || this.users == null || this.users.length == 0){
+      console.log('consutlafindall');
+      this.service.findAll().subscribe(users => this.users = users);
     }
     
   }
@@ -48,7 +52,7 @@ export class UserComponent {
   }
 
   onEditUser(user: User){
-    this.router.navigate(['users/edit', user.id], {state: {user}});
+    this.router.navigate(['users/edit', user.id]);
   }
 
 }
