@@ -11,13 +11,17 @@
                     placeholder="name" 
                     name="name" 
                     [(ngModel)]="user.name" 
-                    required
                     #name = "ngModel">
-                    @if (name.invalid && (name.dirty || name.touched)) {
+
+                    @if(errors?.name){
+                        <div class="text-danger">{{ errors.name }}</div>
+                    }
+
+                    <!-- @if (name.invalid && (name.dirty || name.touched)) {
                         @if (name.errors!['required']) {
                          <div class="text-danger">Nombre es requerido!</div>   
                         }
-                    }
+                    } -->
                 </div>
                 <div>
                     <input type="text" 
@@ -25,14 +29,17 @@
                     placeholder="lastname" 
                     name="lastName"
                     [(ngModel)]="user.lastname" 
-                    required
-                    #lastName = "ngModel">
-                    @if (lastName.invalid && (lastName.dirty || lastName.touched)) {
+                    #lastName = "ngModel">  <!-- required -->
+
+                    @if(errors?.lastname){
+                        <div class="text-danger">{{ errors.lastname }}</div>
+                    }
+
+                    <!-- @if (lastName.invalid && (lastName.dirty || lastName.touched)) {
                         @if (lastName.errors!['required']) {
                          <div class="text-danger">Apellido es requerido!</div>   
                         }
-                        
-                    }
+                    } -->
                 </div>
                 <div>
                     <input type="email" 
@@ -40,18 +47,20 @@
                     placeholder="email" 
                     name="email" 
                     [(ngModel)]="user.email" 
-                    required
-                    email
-                    #email = "ngModel">
-                    @if (email.invalid && (email.dirty || email.touched)) {
+                    #email = "ngModel">  <!-- required email-->
+
+                    @if(errors?.email){
+                        <div class="text-danger">{{ errors.email }}</div>
+                    }
+
+                    <!-- @if (email.invalid && (email.dirty || email.touched)) {
                         @if (email.errors!['required']) {
                          <div class="text-danger">Email es requerido!</div>   
                         }
                         @if (email.errors!['email']) {
                             <div class="text-danger">Email no tiene formato correcto!</div>   
-                        }
-                        
-                    }
+                        }  
+                    } -->
                 </div>
                 <div>
                     <input type="text" 
@@ -59,43 +68,48 @@
                     placeholder="username" 
                     name="username" 
                     [(ngModel)]="user.username" 
-                    required 
-                    minlength="8"
-                    #username = "ngModel">
-                    @if (username.invalid && (username.dirty || username.touched)) {
+                    #username = "ngModel">  <!-- required minlength="8"-->
+
+                    @if(errors?.username){
+                        <div class="text-danger">{{ errors.username }}</div>
+                    }
+
+                    <!-- @if (username.invalid && (username.dirty || username.touched)) {
                         @if (username.errors!['required']) {
                          <div class="text-danger">Usuario es requerido!</div>   
                         }
                         @if (username.errors!['minlength']) {
                             <div class="text-danger">Usuario debe tener al menos 8 caracteres</div>
                         }
-                        
-                    }
+                    } -->
                 </div>
                 <div>
                     <input type="password" 
                     class="form-control my-2" 
                     placeholder="password" 
                     name="password" 
-                    [(ngModel)]="user.password" 
-                    required 
-                    minlength="6"
-                    #password = "ngModel">
-                    @if (password.invalid && (password.dirty || password.touched)) {
+                    [(ngModel)]="user.password"  
+                    #password = "ngModel">  <!-- required minlength="6" -->
+
+                    @if(errors?.password){
+                        <div class="text-danger">{{ errors.password }}</div>
+                    }
+
+                    <!-- @if (password.invalid && (password.dirty || password.touched)) {
                         @if (password.errors!['required']) {
                          <div class="text-danger">Password es requerido!</div>   
                         }
                         @if (password.errors!['minlength']) {
                             <div class="text-danger">Password debe tener al menos 6 caracteres</div>
                         }
-                    }
+                    } -->
                 </div>
                 <div>
                     <button 
                         type="submit" 
                         class="btn btn-primary my-2"
-                        [disabled]="userForm.invalid">
-                        {{(user.id == 0) ? 'Create': 'Update'}}
+                        > <!-- [disabled]="userForm.invalid" -->
+                        {{(user.id > 0) ? 'Update': 'Create'}}
                     </button>
                     <button 
                         type="button" 

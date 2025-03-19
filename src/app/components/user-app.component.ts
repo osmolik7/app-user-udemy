@@ -38,27 +38,42 @@ export class UserAppComponent implements OnInit
   addUser() {
     this.sharingData.newUserEventEmmiter.subscribe(user => {
       if(user.id){
-        this.service.update(user).subscribe(userUpdated => {
-          this.users = this.users.map(usuario => (usuario.id == user.id) ? {... userUpdated} : usuario);
-          this.router.navigate(['/users'], {state:{users: this.users}});
-        })
-        Swal.fire({
-          title: "Exito!",
-          text: "Se a actualizado el usuario correctamente!",
-          icon: "success"
-        });
+        this.service.update(user).subscribe(
+          { next: (userUpdated) => {
+              this.users = this.users.map(usuario => (usuario.id == user.id) ? {... userUpdated} : usuario);
+              this.router.navigate(['/users'], {state:{users: this.users}});
+              Swal.fire({
+                title: "Exito!",
+                text: "Se a actualizado el usuario correctamente!",
+                icon: "success"
+              });
+            },
+            error: (err) => {
+              //console.log(err.error);
+              if(err.status == 400){
+                this.sharingData.errrosUserFormEventEmitter.emit(err.error);
+              }
+            }
+          }
+        )
       }
       else{
-        this.service.create(user).subscribe(userNew => {
-          this.users = [... this.users, { ... userNew } ];
-          this.router.navigate(['/users'], {state:{users: this.users}});
-          
-        })
-        Swal.fire({
-          title: "Exito!",
-          text: "Se a agregado el usuario correctamente!",
-          icon: "success"
-        });
+        this.service.create(user).subscribe({
+          next: userNew => {
+            this.users = [... this.users, { ... userNew } ];
+            this.router.navigate(['/users'], {state:{users: this.users}});
+            Swal.fire({
+              title: "Exito!",
+              text: "Se a agregado el usuario correctamente!",
+              icon: "success"
+            });
+          },
+          error: (err) => {
+            //console.log(err.error);
+            if(err.status == 400){
+              this.sharingData.errrosUserFormEventEmitter.emit(err.error);
+            }
+          }})
       }
     });
   }
