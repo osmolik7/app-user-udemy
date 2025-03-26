@@ -4,10 +4,13 @@ import { UserFormComponent } from './components/user-form/user-form.component';
 
 export const routes: Routes = [
     {
-        path:'', pathMatch:'full', redirectTo:'/users'
+        path:'', pathMatch:'full', redirectTo:'/users/page/0'
     },
     {
         path: 'users', component:UserComponent
+    },
+    {
+        path: 'users/page/:page', component:UserComponent
     },
     {
         path: 'users/create', component:UserFormComponent
