@@ -66,8 +66,19 @@ export class AuthService {
   isAdmin(){
     return this.user.isAdmin;
   }
-  
+
   authenticated(){
     return this.user.isAuth;
+  }
+
+  logout(){
+    this._token = undefined;
+    this._user = {
+      isAuth: false,
+      isAdmin: false,
+      user: undefined
+    };
+    sessionStorage.removeItem('login');
+    sessionStorage.removeItem('token');
   }
 }

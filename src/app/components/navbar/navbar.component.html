@@ -20,12 +20,12 @@
 
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAuth">
         <span class="nav-item nav-link text-primary mx-3">
-          @if(!login.isAuth){
-            <a class="btn btn-outline-primary" [routerLink]="['/login']">Sign in</a>
+          @if(login.isAuth){
+            {{login.user.username}}
+            <button class="btn btn-outline-success" (click)="handlerLogout()">Logout</button>
           }
           @else {
-            {{login.user.username}}
-            <a class="btn btn-outline-primary">Log out</a>
+            <a class="btn btn-outline-primary" [routerLink]="['/login']">Sign in</a>
           }
         </span>
       </div>
