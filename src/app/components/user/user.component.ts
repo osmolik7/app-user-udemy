@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -6,6 +6,8 @@ import { UserService } from '../../services/user.service';
 import { SharingDataService } from '../../services/sharing-data.service';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { AuthService } from '../../services/auth.service';
+import { Store } from '@ngrx/store';
+import { load, remove } from '../../store/users.actions';
 
 @Component({
   selector: 'user',
@@ -20,29 +22,21 @@ export class UserComponent implements OnInit {
   isAdmin: boolean = false;
   
   constructor(
+    private store: Store<{users: any}>,
     private service:UserService, 
     private router: Router, 
     private sharingData:SharingDataService, 
     private authService:AuthService,
-    private route:ActivatedRoute){ 
-    if(this.router.getCurrentNavigation()?.extras.state){
-      this.users = this.router.getCurrentNavigation()?.extras.state!['users'];
-      this.paginator = this.router.getCurrentNavigation()?.extras.state!['paginator'];
-    }
+    private route:ActivatedRoute)
+    {
+      this.store.select('users').subscribe(state => {
+          this.users = state.users;
+          this.paginator = state.paginator;
+      });
   }
 
   ngOnInit(): void {
-    if(this.users == undefined || this.users == null || this.users.length == 0){
-      this.route.paramMap.subscribe(params => {
-        const page = parseInt(params.get('page') || '0' );
-        this.service.findAllPageable(page).subscribe(pageable => {
-          this.users = pageable.content as User[];
-          this.paginator = pageable;
-          this.sharingData.pageUsersEventEmitter.emit({users:this.users, paginator: this.paginator});
-        });
-      })
-    }
-    
+    this.route.paramMap.subscribe(params => this.store.dispatch(load({ page:  parseInt(params.get('page') || '0' )})));
   }
 
   onRemoveUser(id: number): void {
@@ -56,12 +50,7 @@ export class UserComponent implements OnInit {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Eliminado!",
-          text: "El usuario a sido eliminado.",
-          icon: "success"
-        });
-        this.sharingData.idUserEventEmitter.emit(id);
+          this.store.dispatch(remove({id}));
       }
     });    
   }
