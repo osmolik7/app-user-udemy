@@ -1,18 +1,24 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './interceptors/token.interceptor';
 import { provideStore } from '@ngrx/store';
-import { usersReducer } from './store/users.reducer';
+import { usersReducer } from './store/users/users.reducer';
 import { provideEffects } from '@ngrx/effects';
-import { UserEffects } from './store/users.effects';
+import { UserEffects } from './store/users/users.effects';
+import { authReducer } from './store/auth/auth.reducer';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { AuthEffects } from './store/auth/auth.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([tokenInterceptor])), provideStore({
-        users: usersReducer
-    }), provideEffects(UserEffects)]
+    provideHttpClient(withInterceptors([tokenInterceptor])),
+    provideStore({
+        users: usersReducer,
+        auth: authReducer
+    }),
+    provideEffects(UserEffects, AuthEffects), provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })]
 };
