@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
-import { SharingDataService } from '../../services/sharing-data.service';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { AuthService } from '../../services/auth.service';
 import { Store } from '@ngrx/store';
@@ -19,19 +17,18 @@ export class UserComponent implements OnInit {
   users: User[] = [];
   paginator: any = {};
   title: string = 'Users list';
-  isAdmin: boolean = false;
-  
+  loading: boolean = true;
+
   constructor(
     private store: Store<{users: any}>,
-    private service:UserService, 
     private router: Router, 
-    private sharingData:SharingDataService, 
     private authService:AuthService,
     private route:ActivatedRoute)
     {
       this.store.select('users').subscribe(state => {
           this.users = state.users;
           this.paginator = state.paginator;
+          this.loading = state.loading;
       });
   }
 

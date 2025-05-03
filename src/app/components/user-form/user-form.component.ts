@@ -17,7 +17,7 @@ export class UserFormComponent implements OnInit {
 
   constructor( 
     private store: Store<{users: any}>,
-    private route: ActivatedRoute 
+    private route: ActivatedRoute
   )
   {
     this.user = new User();
@@ -47,7 +47,9 @@ export class UserFormComponent implements OnInit {
   }
 
   clear(userForm: NgForm){
-    this.store.dispatch(resetUser());
+    if(this.user.id == 0 || this.user.id == undefined || this.user.id == null){
+      this.store.dispatch(resetUser());
+    }
     userForm.reset();
     userForm.resetForm();
   }
